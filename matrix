@@ -2,19 +2,44 @@
 
 #Global variable to hold file path 
 datafilepath="datafile$$"
+#Global variable to hold number of rows in a matrix
+rows=0
+#Global variable to hold the number of columns in a matrix
+columns=0
 
 function dims()
 {
 # Name: dims
-# Arguments: Input is either a single file or stdin
+# Arguments: Input is either a single file or stdin saved in global variable datafilepath
 # Description: Calculates the number of rows and columns of the matrix
-# Output: Error message to stderr if argument is invalid
-#	  Number_of_rows Number_of_columns to stdout if argument is valid
- echo "here"
+# Output: Number_of_rows Number_of_columns to stdout if argument is valid
+
+# While Loop: Read each line from the datafilepath
+while read myLine
+
+do
+	# increase the count for rows
+	rows=$((rows+1))
+
+	# use the first row to get the number of columns
+	if [[ $rows = 1 ]]
+	then
+		# for each number in the row, increase the count of columns
+		for i in $myLine
+		do
+			columns=$((columns+1))
+		done
+	fi
+
+done < "$datafilepath"
+
+# print "rows columns" to stdout and exit with no error
+echo "$rows $columns" >&1
+exit 0
 }
 
 
-# Check Input
+# Check Input before calling any function
 
 # if the command is dims , transpose, or mean
 if [ "$1" = "dims" ] || [ "$1" = "transpose" ] || [ "$1" = "mean" ]
@@ -31,7 +56,7 @@ then
 	# then take stdin into a new file 
 	then
 		cat > "$datafilepath"
-echo "$datafilepath"	
+
 	# else number of arguments is two which means a filename was provide
 	else
 	# so take file name and put into datafilepath variable
@@ -42,7 +67,7 @@ echo "$datafilepath"
 	if [[ -e "$datafilepath" ]] && [[ -r "$datafilepath" ]]
 	# if so then call function from argument 1: 1 is dims 2 is transpose 3 is mean
 	then
-		$1 "${@:2}"
+		$1
 
 	# if not then send error message to stderr and exit with error 2
 	else
