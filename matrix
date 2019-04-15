@@ -6,13 +6,15 @@ datafilepath="datafile$$"
 rows=0
 #Global variable to hold the number of columns in a matrix
 columns=0
+#Global variable for if another function called dims
+calldims="false"
 
 function dims()
 {
 # Name: dims
 # Arguments: Input is either a single file or stdin saved in global variable datafilepath
 # Description: Calculates the number of rows and columns of the matrix
-# Output: Number_of_rows Number_of_columns to stdout if argument is valid
+# Output: Number_of_rows Number_of_columns to stdout
 
 # While Loop: Read each line from the datafilepath
 while read myLine
@@ -33,11 +35,40 @@ do
 
 done < "$datafilepath"
 
-# print "rows columns" to stdout and exit with no error
-echo "$rows $columns" >&1
-exit 0
+# if another function did not call dims
+if [ "$calldims" = "false" ]
+then
+# print "rows columns" to stdout and return with no errors
+	echo "$rows $columns" >&1
+	exit 0
+fi
 }
 
+function transpose()
+{
+# Name: transpose
+# Arguments: Input is either a single file or stdin saved in a global variable datafilepath
+# Description: Takes a matrix and reflects the elements across the main diagonal (columns become rows)
+# Output: Transposed matrix to stdout
+
+# set calldims to true
+calldims="true"
+# call dims to get the number of columns 
+dims
+
+# set current column to 1
+currentCol=1
+
+# use a while loop to cut and paste each column into a row
+while [ $currentCol -le $columns ]
+do
+	# cut the current column from the input and paste it into a row
+	cut -f "$currentCol" "$datafilepath" | paste -s 
+	# increment count of currentCol
+	((currentCol++))
+done
+
+}
 
 # Check Input before calling any function
 
