@@ -1,0 +1,52 @@
+#!/bin/bash
+
+#Global variable to hold file path 
+datafilepath="datafile$$"
+
+function dims()
+{
+# Name: dims
+# Arguments: Input is either a single file or stdin
+# Description: Calculates the number of rows and columns of the matrix
+# Output: Error message to stderr if argument is invalid
+#	  Number_of_rows Number_of_columns to stdout if argument is valid
+ echo "here"
+}
+
+
+# Check Input
+
+# if the command is dims , transpose, or mean
+if [ "$1" = "dims" ] || [ "$1" = "transpose" ] || [ "$1" = "mean" ]
+# then check there is only up to 1 additional argument
+then
+	if [[ $# -gt 2 ]] || [[ $# -lt 1 ]]
+	# if there is more than 1 additional argument then send error message to stderr and exit with error 1
+	then
+		echo "Invalid number of arguments" 1>&2
+		exit 1
+	
+	# else if there is no additional arguments 
+	elif [ $# -eq 1 ]
+	# then take stdin into a new file 
+	then
+		cat > "$datafilepath"
+echo "$datafilepath"	
+	# else number of arguments is two which means a filename was provide
+	else
+	# so take file name and put into datafilepath variable
+		datafilepath=$2
+	fi
+
+	# Check the input file is readable and exists
+	if [[ -e "$datafilepath" ]] && [[ -r "$datafilepath" ]]
+	# if so then call function from argument 1: 1 is dims 2 is transpose 3 is mean
+	then
+		$1 "${@:2}"
+
+	# if not then send error message to stderr and exit with error 2
+	else
+		echo "File does not exist or cannot be read" 1>&2
+		exit 2
+	fi
+fi
