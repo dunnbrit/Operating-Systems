@@ -8,6 +8,9 @@ rows=0
 columns=0
 #Global variable for if another function called dims
 calldims="false"
+#Global variable to hold filepath for the mean function
+datafilepathmean="datafile$$"
+
 
 function dims()
 {
@@ -38,8 +41,10 @@ done < "$datafilepath"
 # if another function did not call dims
 if [ "$calldims" = "false" ]
 then
-# print "rows columns" to stdout and return with no errors
+# print "rows columns" to stdout 
 	echo "$rows $columns" >&1
+# remove temp files
+
 	exit 0
 fi
 }
@@ -69,6 +74,81 @@ do
 done
 
 }
+
+function mean()
+{
+# Name: mean
+# Arguements: Input is either a single file or stdin saved in a global variable datafilepath
+# Description: Takes a matrix and calculates the mean of each column
+# Output: A 1xN row vector of the means of each column to stdout
+
+# Set calldims to true
+calldims="true"
+# Call dims to get the number of rows which will be used to calculate mean
+dims
+
+
+# Call transpose function and pipe the results into the datafilepathmean file
+transpose | cat > "$datafilepathmean"
+
+# Temp file to hold the means
+tempMeans="tempmeanfile"
+
+# Read each row (column in matrix that is not transposed)
+while read eachrow
+do
+
+	# for each number in the row
+	for i in $eachrow
+	# add to total which will calculate the sum of the row#!/bin/bash
+function dims()
+{
+	# If the number of arguments is not one
+	if [ $# -ne 1 ]
+	# then send error message to stderr
+	then
+		echo "Invalid number of arguments" >&2
+	fi
+	
+	# Variable to store file from argument
+	# DATAFILE=$1
+	# Check file exists and is readable
+	# if [[ -e DATAFILE ]] && [[ -r DATAFILE ]]
+	# if so start calculating number of rows and columns 
+	# then
+	#	echo "it exists"
+	# if not send error message to stderr and exit with return value 2
+	# else
+	#	echo "File does not exist or is not readable" >&2
+	# fi
+}
+	do
+	
+		total=$((total+i))
+	done
+	
+	# Divide the total by the number of rows
+	# the number of rows was found when transpose was called which also called dims
+	mean=$(( (total + (rows/2)*( (total>0)*2-1 )) / rows ))
+	
+	# Send the mean of each column as it is found to the tempMeans file
+	echo "$mean" >> "$tempMeans"
+
+	# Reset the total and mean to 0 for the next row
+	total=0
+	mean=0
+
+done < "$datafilepathmean"
+
+# Take the results in tempMeans cut and paste them into a single line of output in stdout
+cut -f1 "$tempMeans" | paste -s
+
+# remove the temp file so it does not interfer with future runs 
+# rm "$tempMeans"
+
+}
+
+
 
 # Check Input before calling any function
 
