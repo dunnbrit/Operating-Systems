@@ -100,35 +100,12 @@ do
 
 	# for each number in the row
 	for i in $eachrow
-	# add to total which will calculate the sum of the row#!/bin/bash
-function dims()
-{
-	# If the number of arguments is not one
-	if [ $# -ne 1 ]
-	# then send error message to stderr
-	then
-		echo "Invalid number of arguments" >&2
-	fi
-	
-	# Variable to store file from argument
-	# DATAFILE=$1
-	# Check file exists and is readable
-	# if [[ -e DATAFILE ]] && [[ -r DATAFILE ]]
-	# if so start calculating number of rows and columns 
-	# then
-	#	echo "it exists"
-	# if not send error message to stderr and exit with return value 2
-	# else
-	#	echo "File does not exist or is not readable" >&2
-	# fi
-}
 	do
-	
+	# add each number to the total of the row
 		total=$((total+i))
 	done
 	
 	# Divide the total by the number of rows
-	# the number of rows was found when transpose was called which also called dims
 	mean=$(( (total + (rows/2)*( (total>0)*2-1 )) / rows ))
 	
 	# Send the mean of each column as it is found to the tempMeans file
@@ -144,7 +121,7 @@ done < "$datafilepathmean"
 cut -f1 "$tempMeans" | paste -s
 
 # remove the temp file so it does not interfer with future runs 
-# rm "$tempMeans"
+rm "$tempMeans"
 
 }
 
