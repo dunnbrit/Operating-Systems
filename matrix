@@ -43,8 +43,7 @@ if [ "$calldims" = "false" ]
 then
 # print "rows columns" to stdout 
 	echo "$rows $columns" >&1
-# remove temp files
-
+# return with 0 errors
 	exit 0
 fi
 }
@@ -120,8 +119,8 @@ done < "$datafilepathmean"
 # Take the results in tempMeans cut and paste them into a single line of output in stdout
 cut -f1 "$tempMeans" | paste -s
 
-# remove the temp file so it does not interfer with future runs 
-rm "$tempMeans"
+# remove the temp file so it does not interfere with future runs 
+rm -f "$tempMeans"
 
 }
 
