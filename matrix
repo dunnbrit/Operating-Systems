@@ -126,7 +126,41 @@ rm -f "$tempMeans"
 
 function add()
 {
-echo "add"
+# check the matrices are the same size
+# set calldims to true
+calldims="true"
+
+# set the datafilepath to matrix one from argument 1
+datafilepath=$1
+
+# call dims to get the number of cols and rows for matrix one
+dims
+
+# save matrix one col and row count in variables
+m1rows="$rows"
+m1cols="$columns"
+
+
+# change the datafilepath to matrix two from argument 2
+datafilepath=$2
+
+# reset rows and columns to 0
+rows=0
+columns=0
+
+# call dims to get the number of cols and rows for matrix two
+dims
+
+# compare the number of cols and rows for matrix one and two
+if [[ $m1rows -ne $rows ]] || [[ $m1cols -ne $columns ]]
+# if the number of rows and cols are not equal
+then
+#then send an error message to stderr and exit with error 4
+	echo "Matrices are not the same size. Cannot add." 1>&2
+	exit 4
+fi
+
+
 }
 
 function multiply()
@@ -189,41 +223,8 @@ then
 		if [[ -e "$2" ]] && [[ -r "$2" ]] && [[ -e "$3" ]] && [[ -r "$3" ]]
 		# if so then call the function from argument 1: 4 is add 5 is multiply
 		then
-		# check the matrices are the same size
-			# set calldims to true
-			calldims="true"
-			
-			# set the datafilepath to matrix one from argument 2
-			datafilepath=$2
+			$1 "${@:2}"
 
-			# call dims to get the number of cols and rows for matrix one
-			dims
-
-			# save matrix one col and row count in variables
-			m1rows="$rows"
-			m1cols="$columns"
-
-			# change the datafilepath to matrix two from arguement 3
-			datafilepath=$3
-
-			# reset rows and columns to 0
-			rows=0
-			columns=0
-
-			# call dims to get the number of cols and rows for matrix two
-			dims
-
-			# compare the number of cols and rows for matrix one and two
-			if [[ $m1rows -ne $rows ]] || [[ $m1cols -ne $columns ]]
-			# if the number of rows and cols are not equal
-			then
-				#then send an error message to stderr and exit with error 4
-				echo "Matrices are not the same size. Cannot add or multiply" 1>&2
-				exit 4
-			# else call the function from arguement 1: 4 for add 5 for multiply and pass the matrices
-			else
-				$1 "${@:2}"
-			fi
 		# if not send error message to stderr and exit with error 2
 		else
 			echo "File does not exist or cannot be read" 1>&2
