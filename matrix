@@ -77,7 +77,7 @@ done
 function mean()
 {
 # Name: mean
-# Arguements: Input is either a single file or stdin saved in a global variable datafilepath
+# Arguments: Input is either a single file or stdin saved in a global variable datafilepath
 # Description: Takes a matrix and calculates the mean of each column
 # Output: A 1xN row vector of the means of each column to stdout
 
@@ -126,6 +126,11 @@ rm -f "$tempMeans"
 
 function add()
 {
+# Name: add
+# Arguments: Input is two files containing a matrix each
+# Description: Input is checked to make sure matrices are the same size. If so the sum of each element pair is calculated 
+# Output: Error message to stderr if matrices are different sizes or  Matrix of the sums of each element pair to stdout.
+
 # check the matrices are the same size
 # set calldims to true
 calldims="true"
@@ -159,6 +164,55 @@ then
 	echo "Matrices are not the same size. Cannot add." 1>&2
 	exit 4
 fi
+
+# set variable to track current row and current column
+currentRow=1
+currentColumn=1
+
+tempAdd="tempadd"
+
+# while the current row is not past the last row
+while [ $currentRow -le $rows ]
+do
+	#while the current current column is not past the last column
+	while [ $currentColumn -le $columns ]
+	do
+		# Get the current element from matrix one
+		# (Get the first number of lines from head then the last line of those lines from tail)
+		elementM1=$( cat "$1" | head -n "$currentRow" | tail -n 1 | cut -f "$currentColumn")
+		
+		# Get the current element from matrix two
+		elementM2=$( cat "$2" | head -n "$currentRow" | tail -n 1 | cut -f "$currentColumn")
+
+		# add elements from matrix one and two to get sum
+		sum=$((elementM1+elementM2))
+
+		# if current column is the first and current row is the first
+		if [ $currentColumn -eq 1 ]
+		then
+		# then add sum to summation
+		summation=$(printf "%s" "$sum")
+		else
+		# else add summation string and sum together
+		summation=$(printf "%s	%s" "$summation" "$sum")
+		fi
+
+		#increment current column
+		((currentColumn++))
+	done
+
+	echo "$summation" >> "$tempAdd"
+
+	# reset current column to 1
+	currentColumn=1
+
+	# increment current row
+	((currentRow++))
+done
+
+cat "$tempAdd" 0>&1
+
+rm -f "$tempAdd"
 
 
 }
