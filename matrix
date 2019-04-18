@@ -258,10 +258,9 @@ then
 		echo "File does not exist or cannot be read" 1>&2
 		exit 2
 	fi
-fi
 
 # if the command is add or multiply
-if [ "$1" = "add" ] || [ "$1" = "multiply" ]
+elif [ "$1" = "add" ] || [ "$1" = "multiply" ]
 # then check there are 2 additional arguments
 then 
 	# if there are less or more than 3 argument (function and 2 matrix)
@@ -285,4 +284,10 @@ then
 			exit 2
 		fi
 	fi	
+
+# else the command is not valid
+else
+	# send an error message to stderr and exit with error 6
+	echo "Command not recognized." 1>&2
+	exit 6
 fi
