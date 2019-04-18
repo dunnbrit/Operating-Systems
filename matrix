@@ -210,8 +210,10 @@ do
 	((currentRow++))
 done
 
+# send the resulting sum matrix to stdout
 cat "$tempAdd" 0>&1
 
+# remove the tempfile
 rm -f "$tempAdd"
 
 
@@ -258,6 +260,73 @@ then
 	echo "Matrices are mismatched. Cannot multiply." 1>&2
 	exit 5
 fi
+
+# create a temp file for the product result
+tempMultiply="tempmultiplyfile"
+
+# read each row from matrix one
+while read m1row
+do
+	# set the total to 0 Total tracks the product of a M1 row x a M2 column
+	total=0
+
+	# set row to 1 Row tracks where in matrix two is being multiplied
+	row=1
+
+	# set column to 1 Col tracks where in matrix two is being multiplied
+	col=1
+
+	# while not done multiplying all of the row from matrix one by each column of matrix two
+	while [[ $col -le $m2cols ]]
+	do
+		# for each number in the row of matrix one
+		for i in $m1row
+		do
+			# add to the current total the product of matrix one x matrix two
+			result=$( cat "$2" | head -n "$row" | tail -n 1 | cut -f "$col")
+			total=$((total+(i*result)))
+
+			# increment row to move to the next row in matrix two (same column, down a row) 
+			# (this will be multiplied by the next number in the row of matrix one)
+			((row++))
+		done
+
+		# if column 1 
+		if [[ $col -eq 1 ]]
+		then
+		# then add the total to product
+		product=$(printf "%s" "$total")
+		
+		else
+		#else add total to the previous product result
+		product=$(printf "%s	%s" "$product" "$total")
+		fi
+
+		# increment col to move to the next column of matrix two
+		# (same row of matrix one x next column of matrix two)
+		((col++))
+
+		# reset the row number to 1
+		row=1
+		# reset total to 0
+		total=0
+	done
+
+	# add the product of a row of matrix one x each column of matrix two to the temp file
+	echo "$product" >> "$tempMultiply"
+
+	# read next line to multiply the next row of matrix one by each column of matrix two
+
+# read from matrix one file
+done < "$1"
+
+# send the resulting product matrix to stdout
+cat "$tempMultiply" 0>&1
+
+# delete the temp file
+
+rm -f "$tempMultiply"
+
 }
 
 
