@@ -219,7 +219,45 @@ rm -f "$tempAdd"
 
 function multiply()
 {
-echo "multiply"
+# Name: multiply
+# Arguments: Input is two files each containing a matrix
+# Description: Matrix one MxN is multiplied by matrix two NxP to get a new matrix MxN
+# Output: A product matrix MxN to stdout
+
+# Check matrices can be multiplied
+
+# set calldims to true
+calldims="true"
+
+# set the datafilepath to matrix two from argument 2
+datafilepath=$2
+
+# call dims to get the number of cols and rows for matrix one
+dims
+
+# save matrix two col and row count in variables
+m2rows="$rows"
+m2cols="$columns"
+
+
+# change the datafilepath to matrix one from argument 1
+datafilepath=$1
+
+# reset rows and columns to 0
+rows=0
+columns=0
+
+# call dims to get the number of cols and rows for matrix two
+dims
+
+# the columns of matrix one need to equal the rows of matrix two
+if [[ $columns -ne $m2rows ]]
+# if the number of columns of one do not equal the number of rows of two
+then
+#then send an error message to stderr and exit with error 5
+	echo "Matrices are mismatched. Cannot multiply." 1>&2
+	exit 5
+fi
 }
 
 
