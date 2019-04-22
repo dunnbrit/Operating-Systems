@@ -8,9 +8,6 @@ rows=0
 columns=0
 #Global variable for if another function called dims
 calldims="false"
-#Global variable to hold filepath for the mean function
-datafilepathmean="datafile$$"
-
 
 function dims()
 {
@@ -86,9 +83,11 @@ calldims="true"
 # Call dims to get the number of rows which will be used to calculate mean
 dims
 
+# temp file for transposed matrix
+tempTranspose="temptransposefile"
 
-# Call transpose function and pipe the results into the datafilepathmean file
-transpose | cat > "$datafilepathmean"
+# Call transpose function and pipe the results into the tempTranspose file
+transpose | cat > "$tempTranspose"
 
 # Temp file to hold the means
 tempMeans="tempmeanfile"
@@ -114,13 +113,14 @@ do
 	total=0
 	mean=0
 
-done < "$datafilepathmean"
+done < "$tempTranspose"
 
 # Take the results in tempMeans cut and paste them into a single line of output in stdout
 cut -f1 "$tempMeans" | paste -s
 
-# remove the temp file so it does not interfere with future runs 
+# remove the temp files so it does not interfere with future runs 
 rm -f "$tempMeans"
+rm -f "$tempTranspose"
 
 }
 
