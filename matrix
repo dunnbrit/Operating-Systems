@@ -1,13 +1,16 @@
 #!/bin/bash
 
-#Global variable to hold file path 
+# Global variable to hold file path 
 datafilepath="datafile$$"
-#Global variable to hold number of rows in a matrix
+# Global variable to hold number of rows in a matrix
 rows=0
-#Global variable to hold the number of columns in a matrix
+# Global variable to hold the number of columns in a matrix
 columns=0
-#Global variable for if another function called dims
+# Global variable for if another function called dims
 calldims="false"
+
+# remove temp files upon exit
+trap 'rm -f datafile*' exit
 
 function dims()
 {
