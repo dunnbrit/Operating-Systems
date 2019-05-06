@@ -36,6 +36,7 @@ struct Room* allocate(){
     /*Allocate memory for all rooms*/
     int numRooms = 7;
     struct Room *roomsPtr = malloc(numRooms*sizeof(struct Room));
+    int i;
     /*Return the pointer*/
     return roomsPtr;
 }
@@ -72,9 +73,9 @@ struct Room GetRandomRoom(struct Room* input)
 /*
  * Returns true if a connection can be added from Room x (< 6 outbound connections), false otherwise
  */
-int CanAddConnectionFrom(struct Room x) 
+int CanAddConnectionFrom(struct Room* x) 
 {
-    if(x.numOutboundConnections < 6){
+    if(x->numOutboundConnections < 6){
 	return 1;
     }
     else{
@@ -85,16 +86,20 @@ int CanAddConnectionFrom(struct Room x)
 /*
  *  Returns true if a connection from Room x to Room y already exists, false otherwise
  */ 
-int ConnectionAlreadyExists(struct Room x, struct Room y)
+int ConnectionAlreadyExists(struct Room* x, struct Room* y)
 {
     int i;
     /*Go through all connection to check if there is a match*/
-    for(i=0; i < x.numOutboundConnections; i++){
-	
+    for(i=0; i < x->numOutboundConnections; i++){
+	/*If the room is the same room*/
+	if(x->outboundConnections[i] == (struct room*)y){
+	    /*Then return true*/
+	    return 1;
+	}
     }
+    /*if here then there was not a connection so return false*/
+    return 0;
 }
-
-
 
 
 int main(){
@@ -180,11 +185,19 @@ srand(time(0));
     struct Room newRoom = GetRandomRoom(allRooms);
     
 
-    printf("%d\n", newRoom.numOutboundConnections);
+    /*printf("%d\n", newRoom.numOutboundConnections);*/
     
-    int bools = CanAddConnectionFrom(newRoom);
+    int bools = CanAddConnectionFrom(&newRoom);
     
-    printf("%d",bools);
+    /*printf("%d",bools);*/
+    
+    int already = ConnectionAlreadyExists(&newRoom,&allRooms[1]);
+    printf("%d",already);
+    newRoom.numOutboundConnections=2;
+    newRoom.outboundConnections[1]=(struct room*)&allRooms[1];
+    already = ConnectionAlreadyExists(&newRoom,&allRooms[1]);
+    
+    printf("%d",already);
     
     return 0;
 }
