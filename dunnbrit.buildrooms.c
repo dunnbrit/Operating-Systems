@@ -61,13 +61,13 @@ int IsGraphFull(struct Room* input)
 /*
  *  Returns a random Room, does NOT validate if connection can be added
  */
-struct Room GetRandomRoom(struct Room* input)
+struct Room* GetRandomRoom(struct Room* input)
 {
     /*Get a random number*/
     int randomNum = rand() % 7;
     
     /*Return the random room*/
-    return input[randomNum];
+    return &input[randomNum];
 }
 
 /*
@@ -127,6 +127,39 @@ int IsSameRoom(struct Room* x, struct Room* y)
 	return 0;
     }
 }
+
+void AddRandomConnection(struct Room* input)  
+{
+    /*Variables for random Rooms*/
+    struct Room* A;  
+    struct Room* B;
+    
+    /*Get a random room*/
+    while(1){
+	/*Call function to get a ptr to a random room*/
+        A = GetRandomRoom(input);
+	
+	/*Check if A has space for more outbound connections*/
+	if (CanAddConnectionFrom(A) == 1){
+	    /*If so then exit loop*/
+	    break;
+	}
+    }
+
+    /*Get another random room*/
+    do{
+	/*Call fucntion to get a ptr to a andom room*/
+	B = GetRandomRoom(input);
+    }
+    /*Check coonection is possible, if not get a new random room*/
+    while(CanAddConnectionFrom(B) == 0 || IsSameRoom(A, B) == 1|| ConnectionAlreadyExists(A, B) == 1);
+
+    /*Connect Rooms*/
+    ConnectRoom(A, B);
+    ConnectRoom(B, A);
+
+}
+
 
 
 int main(){
@@ -207,30 +240,13 @@ srand(time(0));
 	}
     }
     
+/*Create all connections in graph*/
+    /*Call IsGraphFull until enough connections have been made*/
+    while (IsGraphFull(allRooms) == 0){
+	/*Call AddRandomConnection to connect two rooms*/
+	AddRandomConnection(allRooms);
+    }
   
     
-    struct Room newRoom = GetRandomRoom(allRooms);
-    
-
-    /*printf("%d\n", newRoom.numOutboundConnections);*/
-    
-    int bools = CanAddConnectionFrom(&newRoom);
-    
-    /*printf("%d",bools);*/
-    
-    int already = ConnectionAlreadyExists(&newRoom,&allRooms[1]);
-    printf("%d",already);
-
-    ConnectRoom(&newRoom,&allRooms[1]);
-    
-    already = ConnectionAlreadyExists(&newRoom,&allRooms[1]);
-    
-    printf("%d",already);
-    
-    int same = IsSameRoom(&newRoom,&newRoom);
-    printf("%d", same);
-    same = IsSameRoom(&newRoom,&allRooms[1]);
-    printf("%d", same);
-    
-    return 0;
+return 0;
 }
