@@ -268,8 +268,10 @@ srand(time(0));
   
 /*Make the new files with room info*/
     int file_descriptor; /*used to check for errors*/
-    char filepath[45];
-    index = 0;
+    char filepath[45]; /*used for the path to create file with name*/
+    index = 0; /*used to track room*/
+    char writeLine[100]; /*used to write line to file*/
+    
     for(i=0; i < 10; i++){
 	/*Check if the fileName is one to skip*/
 	if(i != skipNum[0] && i != skipNum[1] && i != skipNum[2]){
@@ -289,16 +291,33 @@ srand(time(0));
 	    }
 	    /*If not then add room info*/
 	    else{
-		printf("ROOM NAME: %s\n", allRooms[index].name);
+		/*Clear write line*/
+		memset(&writeLine,0,sizeof(writeLine));
+		/*Create line for room name*/
+		sprintf(writeLine,"ROOM NAME: %s\n", allRooms[index].name);
+		/*Write room name to file*/
+		write(file_descriptor, writeLine, strlen(writeLine)*sizeof(char));
+		
 		/*Loop through all the connecting rooms*/
 		int j;
 		for(j=0; j < allRooms[index].numOutboundConnections; j++){
-		    printf("CONNECTION %d: %s\n", j, allRooms[index].outboundConnections[j]->name);
+		    /*Clear write line*/
+		    memset(&writeLine,0,sizeof(writeLine));
+		    /*Create line for room connection*/
+		    sprintf(writeLine,"CONNECTION %d: %s\n", j+1, allRooms[index].outboundConnections[j]->name);
+		    /*Write room connection to file*/
+		    write(file_descriptor, writeLine, strlen(writeLine)*sizeof(char));		    
 		}
-		printf("ROOM TYPE: %s\n", allRooms[index].roomType);
+		
+		/*Clear write line*/
+		memset(&writeLine,0,sizeof(writeLine));
+		/*Create line for roo type*/
+		sprintf(writeLine,"ROOM TYPE: %s\n", allRooms[index].roomType);
+		/*Write room type to file*/
+		write(file_descriptor, writeLine, strlen(writeLine)*sizeof(char));		
+			
 		/*Increment index*/
 		index++;
-	    
 		/*Close file*/
 		close(file_descriptor);
 	    }
