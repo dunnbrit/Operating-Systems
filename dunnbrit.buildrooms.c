@@ -112,6 +112,22 @@ void ConnectRoom(struct Room* x, struct Room* y)
     x->numOutboundConnections++;
 }
 
+/*
+ *  Returns true if Rooms x and y are the same Room, false otherwise
+ */
+int IsSameRoom(struct Room* x, struct Room* y) 
+{
+    /*Check if the same struct Room ptr*/
+    if(x == y){
+	/*if so return true same room*/
+	return 1;
+    }
+    else{
+	/*Otherwise return false*/
+	return 0;
+    }
+}
+
 
 int main(){
 /*Initialize Random*/
@@ -210,6 +226,11 @@ srand(time(0));
     already = ConnectionAlreadyExists(&newRoom,&allRooms[1]);
     
     printf("%d",already);
+    
+    int same = IsSameRoom(&newRoom,&newRoom);
+    printf("%d", same);
+    same = IsSameRoom(&newRoom,&allRooms[1]);
+    printf("%d", same);
     
     return 0;
 }
