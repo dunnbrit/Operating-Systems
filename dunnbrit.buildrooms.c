@@ -6,6 +6,8 @@
 #include <time.h>
 #include <fcntl.h>
 
+
+
 /*Struct for rooms*/
 struct Room{
     /*Room name*/
@@ -96,6 +98,9 @@ int ConnectionAlreadyExists(struct Room x, struct Room y)
 
 
 int main(){
+/*Initialize Random*/
+srand(time(0));
+
 /*Create a new directory*/    
     /*Path for files in the directory*/
     char dirPath[] = "dunnbrit.buildrooms.";
@@ -133,7 +138,7 @@ int main(){
     }while(skipNum[0] == skipNum[1] || skipNum[1] == skipNum[2] || skipNum[0] == skipNum[2]);
     
     /*Call allocate to allocate memory for all the room structs*/
-    struct Room* allRooms = NULL;
+    struct Room* allRooms = 0;
     allRooms = allocate();
     
     /*Make the new files and add room to array of rooms*/
