@@ -15,7 +15,7 @@ struct Room{
     /*Counter for outbound connections*/
     int numOutboundConnections;
     /*Array to link outbound connections of 3-6*/
-    struct room* outboundConnections[6];
+    struct Room* outboundConnections[6];
     /*Room type*/
     char* roomType;   
 };
@@ -92,13 +92,24 @@ int ConnectionAlreadyExists(struct Room* x, struct Room* y)
     /*Go through all connection to check if there is a match*/
     for(i=0; i < x->numOutboundConnections; i++){
 	/*If the room is the same room*/
-	if(x->outboundConnections[i] == (struct room*)y){
+	if(x->outboundConnections[i] == y){
 	    /*Then return true*/
 	    return 1;
 	}
     }
     /*if here then there was not a connection so return false*/
     return 0;
+}
+
+/*
+ * Connects Rooms x and y together, does not check if this connection is valid
+ */
+void ConnectRoom(struct Room* x, struct Room* y) 
+{
+    /*add room y to room x outboundConnections*/
+    x->outboundConnections[x->numOutboundConnections]= y;
+    /*increase room x number of outbound connections*/
+    x->numOutboundConnections++;
 }
 
 
@@ -193,8 +204,9 @@ srand(time(0));
     
     int already = ConnectionAlreadyExists(&newRoom,&allRooms[1]);
     printf("%d",already);
-    newRoom.numOutboundConnections=2;
-    newRoom.outboundConnections[1]=(struct room*)&allRooms[1];
+
+    ConnectRoom(&newRoom,&allRooms[1]);
+    
     already = ConnectionAlreadyExists(&newRoom,&allRooms[1]);
     
     printf("%d",already);
