@@ -1,3 +1,4 @@
+/*************************Setup************************************************/
 /* Libraries */
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,8 +6,6 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <fcntl.h>
-
-
 
 /*Struct for rooms*/
 struct Room{
@@ -27,7 +26,7 @@ char* FileName[10] = {"/blue_room", "/red_room", "/yellow_room", "/green_room", 
 /*Array for room names*/
 char* RoomName[10] = {"blue", "red", "yellow", "green", "pink", "purple", "orange", "black", "white", "silver"};
 
-
+/***************************Functions*****************************************/
 
 /*
  * Allocate(): allocates memory for all the room structs. Returns a pointer for all the rooms.
@@ -160,7 +159,7 @@ void AddRandomConnection(struct Room* input)
 
 }
 
-
+/********************************Main*****************************************/
 
 int main(){
 /*Initialize Random*/
@@ -169,7 +168,7 @@ srand(time(0));
 
 /*Create a new directory*/    
     /*Path for files in the directory*/
-    char dirPath[] = "dunnbrit.buildrooms.";
+    char dirPath[] = "dunnbrit.rooms.";
     
     /*Get the process id for the rooms program*/
     int pid = getpid();
