@@ -68,15 +68,74 @@ void getNewestDirectory(char* newestDirName){
 /*
  *Returns the start room name(using pointers) 
  */
-void getStartRoom(char* startRoom){
+void getStartRoom(char* startRoom, char* myDir){
+    /*Holds the open directory*/
+    DIR* dirOpened;
+    /*Holds the current file to be read*/
+    struct dirent *currentDirFile;
+    /*Holds the file pointer of the opened file*/
+    FILE* fp;
+    /*Holds the file path to open file*/
+    char filePath[100];
+    /*Holds the line read from file*/
+    char readLine[100];
     
+    /*Open the directory with the files*/
+    dirOpened = opendir(myDir);
+    
+    /*Make sure the directory opened*/
+    if(dirOpened > 0){
+	
+	/*Go through each file in the directory*/
+	while((currentDirFile = readdir(dirOpened)) != 0){ 
+	    
+	    /*If file name contains "_room"*/
+	    if(strstr(currentDirFile->d_name,"_room") != 0){
+		/*Clear file path*/
+		memset(&filePath,0,sizeof(filePath));
+		/*Create file path*/
+		sprintf(filePath,"%s/%s",myDir,currentDirFile->d_name);
+		/*Open the file for reading*/
+		fp = fopen(filePath,"r");
+		
+		/*Make sure the file opened*/
+		if(fp != 0){
+		    /*Loop until at last line of file*/
+		    while(fgets(readLine,100,fp) != 0){
+			/*Don't do anything with the read lines until at last line*/
+		    }
+		    
+		    /*Check if the line contains "START_ROOM*/
+		    if(strstr(readLine,"START_ROOM")){
+			/*Set the file pointer back to the beginning of the file but after "ROOM NAME: "*/
+			if(fseek(fp,11,SEEK_SET)== 0){
+			    /*If successful get the room name*/
+			    fgets(readLine,100,fp);
+			    /*Copy the room name into start room*/
+			    strcpy(startRoom,readLine);
+			    /*Close file*/
+			    fclose(fp);
+			    /*Exit function*/
+			    return;
+			}
+		    }
+		    /*Close file*/
+		    fclose(fp);
+		    /*Reset pointer to null*/
+		    fp = 0;
+		}
+	    }  
+	}
+    }
+    /*Close the directory*/
+    closedir(dirOpened);
 }
 
 /*
  *Returns the current room name, the connected room names, number of connections,
  *and room type (using pointers)
  */
-void getCurrentRoomInfo(char* roomName, char** connectedRooms, int* numConnected, int* type){
+void getCurrentRoomInfo(char* roomName, char** connectedRooms, int* numConnected, int* type, char* myDir){
     
 }
 
@@ -109,10 +168,9 @@ int main(){
 
 /*Run game*/
     /*First get the name of the start room*/
-    getStartRoom(currentRoom);
+    getStartRoom(currentRoom, dirName);
     
-    
-    /*getCurrentRoomInfo(currentRoom, connections, &numConnections, &roomType);*/
+    getCurrentRoomInfo(currentRoom, connections, &numConnections, &roomType, dirName);
     
     
     
