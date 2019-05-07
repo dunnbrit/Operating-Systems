@@ -262,11 +262,20 @@ int main(){
     int steps = 0;
     /*File pointer to write path to*/
     FILE* filePtr;
+    /*File path for path of rooms*/
+    char file_path[100];
+    /*Holds the read in line from path.txt*/
+    char pathLine[100];
     
     
     /*First get the name of the start room*/
     getStartRoom(currentRoom, dirName);
 
+    /*Create file path name*/
+    sprintf(file_path,"%s/path.txt",dirName);
+    /*Create and open file to write path of rooms to*/
+    filePtr = fopen(file_path,"w+");
+    
     /*Loop until end room reached*/
     while(1){
 	/*Get the current room's info*/
@@ -322,6 +331,8 @@ int main(){
 	
 	/*Increment step*/
 	steps++;
+	/*Write room to file*/
+	fprintf(filePtr,"%s\n",currentRoom);
 	/*Clear past room's info*/
 	for(y=0; y < 6; y++){
 	    memset(connections[y],0,sizeof(connections[y]));
@@ -332,7 +343,17 @@ int main(){
     printf("YOU HAVE FOUND THE END ROOM. CONGRATULATIONS!\n");
     printf("YOU TOOK %d STEPS. YOUR PATH TO VICTORY WAS:\n",steps);
     
+    /*Move filePtr to beginning of file*/
+    fseek(filePtr,0,SEEK_SET);
+    /*Read and print each line*/
+    while(fgets(pathLine,100,filePtr) !=0){
+	printf("%s",pathLine);
+    }
+    /*Close path file*/
+    fclose(filePtr);
     
+    /*Remove file*/
+   
     
     return 0;
 }
