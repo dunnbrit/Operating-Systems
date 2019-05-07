@@ -252,7 +252,7 @@ void* writeTime(void* arguement){
     
     /*Write time to file*/
     fprintf(filePtrTime,"%s\n",MY_TIME);
-    
+
     /*Unlock mutex to allow main thread to read file*/
     pthread_mutex_unlock(&myMutex);
 }
@@ -311,9 +311,7 @@ int main(){
    
 /*File setup to write and read time*/
     /*File path for time*/
-    char file_path_time[100];
-    /*Create file path name*/
-    sprintf(file_path_time,"%s/currentTime.txt",dirName);
+    char file_path_time[50] = "currentTime.txt";
     /*Create and open file to write time to*/
     filePtrTime = fopen(file_path_time,"w+");
     
@@ -344,7 +342,8 @@ int main(){
     int y;
     /*Holds the number of steps taken*/
     int steps = 0;
-
+    /*Holds line read from time file*/
+    char timeLine[100];
 
     /*First get the name of the start room*/
     getStartRoom(currentRoom, dirName); 
@@ -384,15 +383,30 @@ int main(){
 		/*Block main until the second thread completes writing time*/
 		/*This is also being blocked because second thread locked mutex*/
 		pthread_join(secondThread,0);
+		
 		/*Read time from file*/
-		printf("reading from file\n");
+		/*Start at beginning of file*/
+		fseek(filePtrTime,0,SEEK_SET);
+		/*Get last line from time file*/
+		while(fgets(timeLine,100,filePtrTime) != 0){
+		    /*Do nothing*/
+		};
+		/*Print time*/
+		printf("\n %s\n",timeLine);
+		
 		/*Lock mutex again*/
 		pthread_mutex_lock(&myMutex);
 		/*Recreate second thread*/
 		pthread_create(&secondThread,0,writeTime,0);
+		
+		/*Free memory*/
+		free(input);
+		/*Set to null*/
+		input = 0;
+		/*Get where to from user*/
+		printf("WHERE TO? >");
+		getline(&input,&bufferSize,stdin);
 	    }	    
-	    /*If not check the room connections*/
-	    else{
 		/*Check if what the user entered matches any of the connecting rooms*/
 		for(j=0; j < numConnections;j++){
 		    /*If the input matches*/;
@@ -414,8 +428,7 @@ int main(){
 		if(correct == 0){
 		    printf("\nHUH? I DON'T UNDERSTAND THAT ROOM. TRY AGAIN.");
 		    printf("\n");
-		}
-	    }	
+		}	
 	    printf("\n");
 	/*Continue while correct is false*/
 	}while(correct == 0);
