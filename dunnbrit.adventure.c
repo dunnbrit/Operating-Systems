@@ -232,7 +232,6 @@ int main(){
     char dirName[256];
     /*Call function to get the newest directory name*/
     getNewestDirectory(dirName);
-    printf("Newest entry found is: %s\n", dirName);
     
 /*Variables to hold room info*/
     /*Current room name*/
@@ -250,15 +249,75 @@ int main(){
     int roomType;
 
 /*Run game*/
+    /*Holds user input*/
+    char* input = 0;
+    /*Holds the size of allocated buffer*/
+    size_t bufferSize = 0;
+    /*Holds if a correct name was entered*/
+    int correct;
+    /*Used for a loop counter later*/
+    int j;
+    int y;
+    
+    
     /*First get the name of the start room*/
     getStartRoom(currentRoom, dirName);
 
-    getCurrentRoomInfo(currentRoom, connections, &numConnections, &roomType, dirName);
+    /*Loop until end room reached*/
+    while(roomType != 2){
+	/*Get the current room's info*/
+	getCurrentRoomInfo(currentRoom, connections, &numConnections, &roomType, dirName);
     
-    
- 
- 
+	/*Set correct to false*/
+	correct = 0;
+	/*Loop until a correct connected room is entered*/
+	do{    
+	    /*Print room info for game*/
+	    printf("CURRENT LOCATION: %s\n",currentRoom);
+	    printf("POSSIBLE CONNECTIONS: ");
+	    for(i=0; i < numConnections;i++){
+		printf("%s",connections[i]);
+		if(i != numConnections-1){
+		    printf(", ");
+		}
+		else{
+		    printf(".\n");
+		}
+	    }
+	    /*Get where to from user*/
+	    printf("WHERE TO? >");
+	    getline(&input,&bufferSize,stdin);
 
+	    /*Check if what the user entered matches any of the connecting rooms*/
+	    for(j=0; j < numConnections;j++){
+		/*If the input matches*/;
+		if(strncmp(input,connections[j], strlen(input)-1) == 0){
+		    /*then change correct to true*/
+		    correct = 1;
+		    /*Clear past room name*/
+		    memset(&currentRoom,0,sizeof(currentRoom));
+		    /*Save the input in currentRoom to be used later*/
+		    strncpy(currentRoom,input,strlen(input)-1);
+		}
+	    }
+	    /*Free memory*/
+	    free(input);
+	    /*Set to null*/
+	    input = 0;
+	    /*If incorrect room entered*/
+	    if(correct == 0){
+		printf("HUH? I DON'T UNDERSTAND THAT ROOM. TRY AGAIN.");
+	    }
+	/*Continue while correct is false*/
+	}while(correct == 0);
+	
+	/*Clear past room's info*/
+	for(y=0; y < 6; y++){
+	    memset(connections[y],0,sizeof(connections[y]));
+	}
+    };
+    
+    
     return 0;
 }
 
