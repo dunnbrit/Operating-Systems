@@ -8,6 +8,17 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <pthread.h>
+#include <time.h>
+
+/*Global variables to help with threads*/
+/*Create a mutex*/
+pthread_mutex_t myMutex = PTHREAD_MUTEX_INITIALIZER;
+/*Holds Threads*/
+pthread_t mainThread;
+pthread_t secondThread;
+/*File pointer to write time to*/
+FILE* filePtrTime;
 
 /**********************************Functions**********************************/
 
@@ -222,16 +233,89 @@ void getCurrentRoomInfo(char* roomName, char** connectedRooms, int* numConnected
     closedir(dirOpened);
 }
 
+/*
+ *Second thread to write time to file
+ */
+void* writeTime(void* arguement){
+    /*Lock the mutex(will block second thread upon creation) but will lock mutex
+     *and block the main thread when main thread unlocks mutex
+     */
+    pthread_mutex_lock(&myMutex);
+    
+    /*Get time. Code from:https://www.geeksforgeeks.org/strftime-function-in-c/ */
+    time_t t ; 
+    struct tm *tmp ; 
+    char MY_TIME[50]; 
+    time( &t ); 
+    tmp = localtime( &t );
+    strftime(MY_TIME, sizeof(MY_TIME), "%I:%M%p, %A, %B %d, %Y", tmp);
+    
+    /*Write time to file*/
+    fprintf(filePtrTime,"%s\n",MY_TIME);
+    
+    /*Unlock mutex to allow main thread to read file*/
+    pthread_mutex_unlock(&myMutex);
+}
+
+/*
+ *Main thread function to create second thread and then block it
+ */
+void* startSecondThread(void* arguement){
+    /*Lock the mutex*/
+    pthread_mutex_lock(&myMutex);
+    
+    /*Holds result for second thread*/
+    int resultSecond;
+    /*Create the second thread(this will block it because the function tries to lock mutex*/
+    resultSecond = pthread_create(&secondThread,0,writeTime,0);
+    /*Check creation successful*/
+    if(resultSecond != 0){
+	printf("Error creating second thread\n");
+    }
+}
 
 
 /********************************Main******************************************/
 
 int main(){
+   
 /*Newest Directory to Use*/
     /*Holds the newest dirName*/
     char dirName[256];
     /*Call function to get the newest directory name*/
     getNewestDirectory(dirName);
+
+/*Create main thread*/
+    /*Holds result for thread*/
+    int resultMain;
+
+    /*Create main thread*/
+    resultMain = pthread_create(&mainThread,0,startSecondThread,0);
+   
+    /*Check thread created successfully*/
+    if(resultMain != 0){
+	printf("Error creating main thread\n");
+    }
+    
+/*File setup to write and read path */
+    /*File pointer to write path to*/
+    FILE* filePtr;
+    /*File path for path of rooms*/
+    char file_path[100];
+    /*Holds the read in line from path.txt*/
+    char pathLine[100];
+    /*Create file path name*/
+    sprintf(file_path,"%s/path.txt",dirName);
+    /*Create and open file to write path of rooms to*/
+    filePtr = fopen(file_path,"w+");    
+   
+/*File setup to write and read time*/
+    /*File path for time*/
+    char file_path_time[100];
+    /*Create file path name*/
+    sprintf(file_path_time,"%s/currentTime.txt",dirName);
+    /*Create and open file to write time to*/
+    filePtrTime = fopen(file_path_time,"w+");
     
 /*Variables to hold room info*/
     /*Current room name*/
@@ -247,7 +331,7 @@ int main(){
     int numConnections;
     /*int to represent current room type 0= start 1=mid 2=end*/
     int roomType;
-
+    
 /*Run game*/
     /*Holds user input*/
     char* input = 0;
@@ -260,21 +344,10 @@ int main(){
     int y;
     /*Holds the number of steps taken*/
     int steps = 0;
-    /*File pointer to write path to*/
-    FILE* filePtr;
-    /*File path for path of rooms*/
-    char file_path[100];
-    /*Holds the read in line from path.txt*/
-    char pathLine[100];
-    
-    
-    /*First get the name of the start room*/
-    getStartRoom(currentRoom, dirName);
 
-    /*Create file path name*/
-    sprintf(file_path,"%s/path.txt",dirName);
-    /*Create and open file to write path of rooms to*/
-    filePtr = fopen(file_path,"w+");
+
+    /*First get the name of the start room*/
+    getStartRoom(currentRoom, dirName); 
     
     /*Loop until end room reached*/
     while(1){
@@ -304,27 +377,45 @@ int main(){
 	    printf("WHERE TO? >");
 	    getline(&input,&bufferSize,stdin);
 
-	    /*Check if what the user entered matches any of the connecting rooms*/
-	    for(j=0; j < numConnections;j++){
-		/*If the input matches*/;
-		if(strncmp(input,connections[j], strlen(input)-1) == 0){
-		    /*then change correct to true*/
-		    correct = 1;
-		    /*Clear past room name*/
-		    memset(&currentRoom,0,sizeof(currentRoom));
-		    /*Save the input in currentRoom to be used later*/
-		    strncpy(currentRoom,input,strlen(input)-1);
+	    /*Check if the time command was entered*/
+	    if(strncmp(input,"time", strlen(input)-1) == 0){
+		/*Main thread unlocks mutex so second thread can write time to file*/
+		pthread_mutex_unlock(&myMutex);
+		/*Block main until the second thread completes writing time*/
+		/*This is also being blocked because second thread locked mutex*/
+		pthread_join(secondThread,0);
+		/*Read time from file*/
+		printf("reading from file\n");
+		/*Lock mutex again*/
+		pthread_mutex_lock(&myMutex);
+		/*Recreate second thread*/
+		pthread_create(&secondThread,0,writeTime,0);
+	    }	    
+	    /*If not check the room connections*/
+	    else{
+		/*Check if what the user entered matches any of the connecting rooms*/
+		for(j=0; j < numConnections;j++){
+		    /*If the input matches*/;
+		    if(strncmp(input,connections[j], strlen(input)-1) == 0){
+			/*then change correct to true*/
+			correct = 1;
+			/*Clear past room name*/
+			memset(&currentRoom,0,sizeof(currentRoom));
+			/*Save the input in currentRoom to be used later*/
+			strncpy(currentRoom,input,strlen(input)-1);
+		    }
 		}
-	    }
-	    /*Free memory*/
-	    free(input);
-	    /*Set to null*/
-	    input = 0;
-	    /*If incorrect room entered*/
-	    if(correct == 0){
-		printf("\nHUH? I DON'T UNDERSTAND THAT ROOM. TRY AGAIN.");
-		printf("\n");
-	    }
+
+		/*Free memory*/
+		free(input);
+		/*Set to null*/
+		input = 0;
+		/*If incorrect room entered*/
+		if(correct == 0){
+		    printf("\nHUH? I DON'T UNDERSTAND THAT ROOM. TRY AGAIN.");
+		    printf("\n");
+		}
+	    }	
 	    printf("\n");
 	/*Continue while correct is false*/
 	}while(correct == 0);
@@ -349,8 +440,9 @@ int main(){
     while(fgets(pathLine,100,filePtr) !=0){
 	printf("%s",pathLine);
     }
-    /*Close path file*/
+    /*Close path and time file*/
     fclose(filePtr);
+    fclose(filePtrTime);
     
     /*Remove file*/
     remove(file_path);
