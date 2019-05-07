@@ -112,7 +112,7 @@ void getStartRoom(char* startRoom, char* myDir){
 			    /*If successful get the room name*/
 			    fgets(readLine,100,fp);
 			    /*Copy the room name into start room*/
-			    strcpy(startRoom,readLine);
+			    strncpy(startRoom,readLine,strlen(readLine)-1);
 			    /*Close file*/
 			    fclose(fp);
 			    /*Exit function*/
@@ -136,7 +136,57 @@ void getStartRoom(char* startRoom, char* myDir){
  *and room type (using pointers)
  */
 void getCurrentRoomInfo(char* roomName, char** connectedRooms, int* numConnected, int* type, char* myDir){
+    /*Holds the open directory*/
+    DIR* dirOpened;
+    /*Holds the current file to be read*/
+    struct dirent *currentDirFile;
+    /*Holds the file pointer of the opened file*/
+    FILE* fp;
+    /*Holds the file path to open file*/
+    char filePath[100];
+    /*Holds the line read from file*/
+    char readLine[100];
     
+    /*Open the directory with the files*/
+    dirOpened = opendir(myDir);
+    
+    /*Make sure the directory opened*/
+    if(dirOpened > 0){
+	printf("dir open\n");
+	/*Go through each file in the directory*/
+	while((currentDirFile = readdir(dirOpened)) != 0){ 
+	    /*If file name contains the current room's name*/
+	    if(strstr(currentDirFile->d_name,roomName) != 0){
+		/*Clear file path*/
+		memset(&filePath,0,sizeof(filePath));
+		/*Create file path*/
+		sprintf(filePath,"%s/%s",myDir,currentDirFile->d_name);
+		/*Open the file for reading*/
+		fp = fopen(filePath,"r");
+		
+		/*Make sure the file opened*/
+		if(fp != 0){
+		    /*Set a loop counter*/
+		    int loop = 0;
+		    /*Loop until at last line of file*/
+		    while(fgets(readLine,100,fp) != 0){
+			/*Get the number of lines*/
+			loop++;
+		    }
+		    
+		    printf("Lines: %d\n",loop);
+		    
+
+		    /*Close file*/
+		    fclose(fp);
+		    /*Reset pointer to null*/
+		    fp = 0;
+		}
+	    }  
+	}
+    }
+    /*Close the directory*/
+    closedir(dirOpened);
 }
 
 
@@ -169,7 +219,7 @@ int main(){
 /*Run game*/
     /*First get the name of the start room*/
     getStartRoom(currentRoom, dirName);
-    
+    printf("currentRoom: %s|",currentRoom);
     getCurrentRoomInfo(currentRoom, connections, &numConnections, &roomType, dirName);
     
     
