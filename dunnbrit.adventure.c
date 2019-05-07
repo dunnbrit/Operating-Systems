@@ -353,7 +353,7 @@ int main(){
     fclose(filePtr);
     
     /*Remove file*/
-   
+    remove(file_path);
     
     return 0;
 }
