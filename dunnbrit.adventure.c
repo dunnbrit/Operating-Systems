@@ -258,16 +258,23 @@ int main(){
     /*Used for a loop counter later*/
     int j;
     int y;
+    /*Holds the number of steps taken*/
+    int steps = 0;
+    /*File pointer to write path to*/
+    FILE* filePtr;
     
     
     /*First get the name of the start room*/
     getStartRoom(currentRoom, dirName);
 
     /*Loop until end room reached*/
-    while(roomType != 2){
+    while(1){
 	/*Get the current room's info*/
 	getCurrentRoomInfo(currentRoom, connections, &numConnections, &roomType, dirName);
-    
+	/*If current room is the end room break the loop*/
+	if(roomType == 2){
+	    break;
+	}
 	/*Set correct to false*/
 	correct = 0;
 	/*Loop until a correct connected room is entered*/
@@ -306,16 +313,25 @@ int main(){
 	    input = 0;
 	    /*If incorrect room entered*/
 	    if(correct == 0){
-		printf("HUH? I DON'T UNDERSTAND THAT ROOM. TRY AGAIN.");
+		printf("\nHUH? I DON'T UNDERSTAND THAT ROOM. TRY AGAIN.");
+		printf("\n");
 	    }
+	    printf("\n");
 	/*Continue while correct is false*/
 	}while(correct == 0);
 	
+	/*Increment step*/
+	steps++;
 	/*Clear past room's info*/
 	for(y=0; y < 6; y++){
 	    memset(connections[y],0,sizeof(connections[y]));
 	}
     };
+    
+    /*Once end room is found*/
+    printf("YOU HAVE FOUND THE END ROOM. CONGRATULATIONS!\n");
+    printf("YOU TOOK %d STEPS. YOUR PATH TO VICTORY WAS:\n",steps);
+    
     
     
     return 0;
