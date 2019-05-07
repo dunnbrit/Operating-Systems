@@ -152,9 +152,10 @@ void getCurrentRoomInfo(char* roomName, char** connectedRooms, int* numConnected
     
     /*Make sure the directory opened*/
     if(dirOpened > 0){
-	printf("dir open\n");
+
 	/*Go through each file in the directory*/
 	while((currentDirFile = readdir(dirOpened)) != 0){ 
+	   
 	    /*If file name contains the current room's name*/
 	    if(strstr(currentDirFile->d_name,roomName) != 0){
 		/*Clear file path*/
@@ -166,17 +167,49 @@ void getCurrentRoomInfo(char* roomName, char** connectedRooms, int* numConnected
 		
 		/*Make sure the file opened*/
 		if(fp != 0){
-		    /*Set a loop counter*/
+		    /*Set a loop counter to get number of lines in file*/
 		    int loop = 0;
 		    /*Loop until at last line of file*/
 		    while(fgets(readLine,100,fp) != 0){
 			/*Get the number of lines*/
 			loop++;
 		    }
+		    /*Save the number of connections*/
+		    *numConnected = loop - 2;
 		    
-		    printf("Lines: %d\n",loop);
+		    /*Move the file pointer back to the start of the file*/
+		    fseek(fp,0,SEEK_SET);
+		    /*Read the first line*/
+		    fgets(readLine,100,fp);
+		    /*Read the next number of connections lines */
+		    int x;
+		    for(x=0;x < *numConnected; x++){
+			/*Move the pointer to room name following "CONNECTION: "*/
+			fseek(fp,14,SEEK_CUR);
+			/*Read next line*/
+			fgets(readLine,100,fp);
+			/*Copy the connecting room name into connected rooms*/
+			strncpy(connectedRooms[x],readLine,strlen(readLine)-1);	
+		    }
 		    
-
+		    /*Move the pointer to go past "ROOM TYPE: "*/
+		    fseek(fp,11,SEEK_CUR);
+		    /*Read last line*/
+		    fgets(readLine,100,fp);
+		    /*Use this line to get room type*/
+		    if(strstr(readLine,"START_ROOM")!= 0){
+			/*Save room type as start room*/
+			*type = 0;
+		    }
+		    if(strstr(readLine,"MID_ROOM")!= 0){
+			/*Save room type as mid room*/
+			*type = 1;
+		    }
+		    if(strstr(readLine,"END_ROOM")!= 0){
+			/*Save room type as end room*/
+			*type = 2;
+		    }
+		    
 		    /*Close file*/
 		    fclose(fp);
 		    /*Reset pointer to null*/
@@ -219,12 +252,13 @@ int main(){
 /*Run game*/
     /*First get the name of the start room*/
     getStartRoom(currentRoom, dirName);
-    printf("currentRoom: %s|",currentRoom);
+
     getCurrentRoomInfo(currentRoom, connections, &numConnections, &roomType, dirName);
     
     
-    
-    
+ 
+ 
+
     return 0;
 }
 
