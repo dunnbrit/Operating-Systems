@@ -1,44 +1,29 @@
 //This is the header file for functions used in the smallsh program
 #ifndef SMALLSH_H
 #define SMALLSH_H
-
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
-
- int getCommand(char* input, char* command, char** arguments){
-     //Clear the previous arguments
-     int i;
-     for(i=0; i < 512; i++){
-	 memset(arguments[i],0,sizeof(arguments[i]));
-     }
-     //Clear the previous command
-     memset(command,0,sizeof(command));
-     
+/*Function parses the input and divides it into the command and arguments
+ * Returns the number of arguments
+ */
+ int getArgs(char* input, char** arguments){     
      //Define the delimiter
      const char delim[2] = " ";
      //Token to hold the command then each argument
      char* token;
      //Counter for arguments
-     int totalArg = -1;
+     int totalArg = 0;
      
      //Get the first token which is the command
      token = strtok(input,delim);
-     //Copy the token into command
-     strncpy(command,token,strlen(token)-1);
      
      //Get the rest of the tokens which are the arguments
      while(token != NULL){
-	 //If total arguments is -1 then it is the command
-	 if(totalArg == -1){
-	    //Copy the token into command
-	    strncpy(command,token,strlen(token)-1);   
-	 }
-	 //If not then its an argument
-	 else{
-	     //Copy the token into arguments
-	     strncpy(arguments[totalArg],token,strlen(token)-1);
-	 }
+	 //Copy the token into arguments
+	 strncpy(arguments[totalArg],token,strlen(token));
 	 
 	 //Increment totalArg
 	 totalArg++;
@@ -50,6 +35,10 @@
      return totalArg;
  }
 
+ 
+ 
+
+ 
 
 
 #endif
