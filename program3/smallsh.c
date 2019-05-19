@@ -37,19 +37,27 @@ for(y=0;y<2;y++){
 
 /*************Handling Different Commands**********************************/
 
-    int i;
-    for(i=0;i<totalArg;i++){
-	printf("%s",arguments[i]);
-    }
     /******Blank Line**************************************/
-    if(strcmp(arguments[0], "")== 0){
+    if(strcmp(arguments[0],"") == 0){
+	printf("blank");
+	fflush(stdout);
 	//Continue to prompt again
-	break;
     }
     /******Comment****************************************/
     else if(arguments[0][0] == '#'){
+	printf("comment");
+	fflush(stdout);
 	//Ignore line and continue to prompt again
-	break;
+    }
+    /******Built in exit********************************/
+    else if(strcmp("exit",arguments[0]) == 0){
+	if(totalArg > 1){
+	    printf("ERROR: exit does not accept arguments");
+	    fflush(stdout);
+	}
+	else{
+	  exit(0);  
+	}
     }
 
 

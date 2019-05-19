@@ -15,24 +15,27 @@
      //Token to hold the command then each argument
      char* token;
      //Counter for arguments
-     int totalArg = 0;
+     int totalArg = -1;
      
      //Get the first token which is the command
      token = strtok(input,delim);
      
      //Get the rest of the tokens which are the arguments
-     while(token != NULL){
+     do{
 	 //Copy the token into arguments
-	 strncpy(arguments[totalArg],token,strlen(token));
+	 strncpy(arguments[totalArg+1],token,strlen(token));
 	 
 	 //Increment totalArg
 	 totalArg++;
 	 
 	 //Get next token
 	 token = strtok(NULL,delim);
-     }
+	 
+     }while(token != NULL);
      
-     return totalArg;
+     arguments[totalArg][strlen(arguments[totalArg])-1] = 0;
+     
+     return totalArg+1;
  }
 
  
