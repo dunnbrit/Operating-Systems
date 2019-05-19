@@ -23,7 +23,7 @@ int totalArg;
 
 
 int y;
-for(y=0;y<2;y++){
+for(y=0;y<3;y++){
 /*************Prompt and Getting Input*************************************/
 
     //Prompt for the command
@@ -39,27 +39,62 @@ for(y=0;y<2;y++){
 
     /******Blank Line**************************************/
     if(strcmp(arguments[0],"") == 0){
-	printf("blank");
+	printf("blank\n");
 	fflush(stdout);
 	//Continue to prompt again
     }
     /******Comment****************************************/
     else if(arguments[0][0] == '#'){
-	printf("comment");
+	printf("comment\n");
 	fflush(stdout);
 	//Ignore line and continue to prompt again
     }
-    /******Built in exit********************************/
+    /******Built in exit**********************************/
     else if(strcmp("exit",arguments[0]) == 0){
-	if(totalArg > 1){
-	    printf("ERROR: exit does not accept arguments");
+	//Too many arguments and last argument is not to run in the background
+	if(totalArg > 2){
+	    printf("ERROR: exit does not accept arguments\n");
 	    fflush(stdout);
 	}
+	else if(totalArg == 2 && (strcmp(arguments[1],"&") != 0)){
+	    printf("ERROR: exit does not accept arguments\n");
+	    fflush(stdout);
+	}
+	//No arguments or ignore argument to run as background process
 	else{
-	  exit(0);  
+	    //Need to add in something to kill all processes first
+	    exit(0);  
 	}
     }
-
+    /*******Built in cd***********************************/
+    else if(strcmp("cd",arguments[0]) == 0){
+	
+	char s[100];
+	
+	//Too many arguments
+	if(totalArg > 2){
+	    printf("ERROR: cd does not accept more than one argument\n");
+	    fflush(stdout);
+	}
+	//No arguments go to HOME directory  
+	else if(totalArg == 1){
+	    chdir(getenv("HOME"));
+	    printf("current dir (HOME): %s\n", getcwd(s,100));
+	    fflush(stdout);
+	}
+	//One additional argument go to that path
+	else{
+	    if(chdir(arguments[1]) == -1){
+		printf("ERROR: invalid path, cd not executed\n");
+		fflush(stdout);
+	    }
+	    else{
+		printf("current dir (PATH): %s\n", getcwd(s,100));
+		fflush(stdout);
+	    }
+	}
+	
+    }
 
 
 
