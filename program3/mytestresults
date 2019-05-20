@@ -1,16 +1,17 @@
 PRE-SCRIPT INFO
-  Grading Script PID: 8382
+  Grading Script PID: 6617
   Note: your smallsh will report a different PID when evaluating $$
 : BEGINNING TEST SCRIPT
 : 
 : --------------------
 : Using comment (5 points if only next prompt is displayed next)
-: comment
-: 
+: : 
 : 
 : --------------------
 : ls (10 points for returning dir contents)
-: mytestresults
+: junk
+junk2
+mytestresults
 p3testscript
 smallsh
 smallsh.c
@@ -19,30 +20,27 @@ smallsh.h
 : 
 : --------------------
 : ls out junk
-: ls: cannot access >: No such file or directory
-ls: cannot access junk: No such file or directory
-: 
+: : 
 : 
 : --------------------
 : cat junk (15 points for correctly returning contents of junk)
-: cat: junk: No such file or directory
+: junk
+junk2
+mytestresults
+p3testscript
+smallsh
+smallsh.c
+smallsh.h
 : 
 : 
 : --------------------
 : wc in junk (15 points for returning correct numbers from wc)
-: wc: <: No such file or directory
-wc: junk: No such file or directory
-0 0 0 total
+:  7  7 66
 : 
 : 
 : --------------------
 : wc in junk out junk2; cat junk2 (10 points for returning correct numbers from wc)
-: wc: <: No such file or directory
-wc: junk: No such file or directory
-wc: >: No such file or directory
-wc: junk2: No such file or directory
-0 0 0 total
-: cat: junk2: No such file or directory
+: :  7  7 66
 : 
 : 
 : --------------------
@@ -51,14 +49,12 @@ wc: junk2: No such file or directory
 : 
 : --------------------
 : wc in badfile (10 points for returning text error)
-: wc: <: No such file or directory
-wc: badfile: No such file or directory
-0 0 0 total
+: ERROR: problem opening read file: Bad file descriptor
 : 
 : 
 : --------------------
 : badfile (10 points for returning text error)
-: Exec failure: No such file or directory
+: ERROR: Exec failure: No such file or directory
 : 
 : 
 : --------------------
@@ -68,7 +64,8 @@ wc: badfile: No such file or directory
 : --------------------
 : pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 : (Ignore message about Operation Not Permitted)
-: pkill: killing pid 8373 failed: Operation not permitted
+: pkill: killing pid 6354 failed: Operation not permitted
+pkill: killing pid 6469 failed: Operation not permitted
 pkill: killing pid 47255 failed: Operation not permitted
 : 
 : 
@@ -83,8 +80,7 @@ pkill: killing pid 47255 failed: Operation not permitted
 : 
 : --------------------
 : cd
-: current dir (HOME): /nfs/stak/users/dunnbrit
-: 
+: : 
 : 
 : --------------------
 : pwd (10 points for being in the HOME dir)
@@ -92,20 +88,16 @@ pkill: killing pid 47255 failed: Operation not permitted
 : 
 : 
 : --------------------
-: mkdir testdir$$
-: mkdir: cannot create directory ‘testdir$$\n---------’: File exists
-: 
+: mkdir testdir6618
+: : 
 : 
 : --------------------
-: cd testdir$$
-: current dir (PATH): /nfs/stak/users/dunnbrit/testdir$$
----------
-: 
+: cd testdir6618
+: : 
 : 
 : --------------------
 : pwd (5 points for being in the newly created dir)
-: /nfs/stak/users/dunnbrit/testdir$$
----------
+: /nfs/stak/users/dunnbrit/testdir6618
 : --------------------
 : Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
 : 
@@ -125,8 +117,8 @@ Options:
  -V, --version  output version information and exit
 
 For more details see kill(1).
-: Sun May 19 23:31:34 PDT 2019
-: : Sun May 19 23:31:34 PDT 2019
+: Mon May 20 03:43:47 PDT 2019
+: : Mon May 20 03:43:47 PDT 2019
 : 
 Usage:
  kill [options] <pid|name> [...]
