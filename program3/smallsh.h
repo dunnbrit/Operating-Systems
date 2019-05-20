@@ -9,7 +9,7 @@
 /*Function parses the input and divides it into the command and arguments
  * Returns the number of arguments
  */
- int getArgs(char* input, char** arguments){     
+ int getArgs(char* input, char** arguments, int* inputIndex, int* outputIndex){     
      //Define the delimiter
      const char delim[2] = " ";
      //Token to hold the command then each argument
@@ -27,6 +27,18 @@
 	 
 	 //Increment totalArg
 	 totalArg++;
+	 
+	 //If the token is < then its followed by an input_file
+	 if(strcmp("<",token) == 0){
+	     //Save the index of the input file argument
+	     *inputIndex =  totalArg + 1;
+	 }
+	 
+	 //If the token is > then its followed by an output_file
+	 if(strcmp(">",token) == 0){
+	     //Save the index of the input file argument
+	     *outputIndex = totalArg + 1;
+	 }
 	 
 	 //Get next token
 	 token = strtok(NULL,delim);

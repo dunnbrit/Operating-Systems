@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 int main(){
@@ -20,10 +21,14 @@ for(z=0; z < 512; z++){
 }
 //Holds the total number of arguments
 int totalArg;
+//Location of file input and output redirection
+int inputIndex;
+int outputIndex;
+//Holds exit status
+int exitStatus = 0;
 
 
-int y;
-for(y=0;y<3;y++){
+while(1){
 /*************Prompt and Getting Input*************************************/
 
     //Prompt for the command
@@ -32,8 +37,11 @@ for(y=0;y<3;y++){
     //Get input
     getline(&input,&bufferSize,stdin);
 
+    //Set Input and Output index to 0 to mean none
+    inputIndex = 0;
+    outputIndex = 0;
     //Get arguments using function
-    totalArg = getArgs(input, arguments);
+    totalArg = getArgs(input, arguments,&inputIndex, &outputIndex);
 
 /*************Handling Different Commands**********************************/
 
@@ -63,6 +71,7 @@ for(y=0;y<3;y++){
 	//No arguments or ignore argument to run as background process
 	else{
 	    //Need to add in something to kill all processes first
+	    //Need exit status from processes
 	    exit(0);  
 	}
     }
@@ -93,9 +102,65 @@ for(y=0;y<3;y++){
 		fflush(stdout);
 	    }
 	}
-	
     }
+    
+    /*******Built in status*******************************/
+    
+    /******Non built in Commands*************************/
+    else{	
+	//If not to be run in the background
+	if((strcmp(arguments[totalArg-1],"&") != 0)){
+	    //Variable to hold the processID
+	    pid_t spawnpid = -5;
+	    //Hold info on child termination
+	    int childExitMethod = -5;
+	    
+	    //Fork a child to run the command
+	    spawnpid = fork();
+	    switch(spawnpid){
+		//Error
+		case -1:
+		    perror("Error: spawnpid");
+		    //Exit with error set to 1
+		    exit(1);
+		    break;
+		    
+		//Child process
+		case 0:
+		    //Check if redirection needs to be done
+		    if(inputIndex > 0 || outputIndex > 0){
+			//If input redirection needed
+			if(inputIndex > 0){
 
+			}
+			//If output redirection needed
+			if(outputIndex > 0){
+
+			}
+		    }
+		    //If not
+		    else{
+			//Set final argument to NULL to indicate end
+			//Used later for exec
+			arguments[totalArg] = NULL;
+		    }
+		    //Exec command (this replaces the fork)
+		    if(execvp(arguments[0],arguments) < 0){
+			//If exec returned < 0 there was an error
+			perror("Exec failure");
+			exit(1);
+		    }
+		    break;
+		    
+		//Parent process
+		default:
+		    //Do nothing just wait on child
+		    break;
+	    }
+	    //Have parent wait on child to terminate before continuing
+	    waitpid(spawnpid, &childExitMethod,0);
+	}
+    }
 
 
 /*************Freeing memory before next command***************************/
@@ -107,6 +172,7 @@ for(y=0;y<3;y++){
     }
     //Set to null
     input = NULL;
-}    
+}//End of while loop
     return 0;
+
 }

@@ -1,3 +1,147 @@
 PRE-SCRIPT INFO
-  Grading Script PID: 12426
+  Grading Script PID: 8382
   Note: your smallsh will report a different PID when evaluating $$
+: BEGINNING TEST SCRIPT
+: 
+: --------------------
+: Using comment (5 points if only next prompt is displayed next)
+: comment
+: 
+: 
+: --------------------
+: ls (10 points for returning dir contents)
+: mytestresults
+p3testscript
+smallsh
+smallsh.c
+smallsh.h
+: 
+: 
+: --------------------
+: ls out junk
+: ls: cannot access >: No such file or directory
+ls: cannot access junk: No such file or directory
+: 
+: 
+: --------------------
+: cat junk (15 points for correctly returning contents of junk)
+: cat: junk: No such file or directory
+: 
+: 
+: --------------------
+: wc in junk (15 points for returning correct numbers from wc)
+: wc: <: No such file or directory
+wc: junk: No such file or directory
+0 0 0 total
+: 
+: 
+: --------------------
+: wc in junk out junk2; cat junk2 (10 points for returning correct numbers from wc)
+: wc: <: No such file or directory
+wc: junk: No such file or directory
+wc: >: No such file or directory
+wc: junk2: No such file or directory
+0 0 0 total
+: cat: junk2: No such file or directory
+: 
+: 
+: --------------------
+: test -f badfile (10 points for returning error value of 1, note extraneous &)
+: : : 
+: 
+: --------------------
+: wc in badfile (10 points for returning text error)
+: wc: <: No such file or directory
+wc: badfile: No such file or directory
+0 0 0 total
+: 
+: 
+: --------------------
+: badfile (10 points for returning text error)
+: Exec failure: No such file or directory
+: 
+: 
+: --------------------
+: sleep 100 background (10 points for returning process ID of sleeper)
+: : 
+: 
+: --------------------
+: pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
+: (Ignore message about Operation Not Permitted)
+: pkill: killing pid 8373 failed: Operation not permitted
+pkill: killing pid 47255 failed: Operation not permitted
+: 
+: 
+: --------------------
+: sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
+: : : 
+: 
+: --------------------
+: pwd
+: /nfs/stak/users/dunnbrit/CS_344/program3
+: 
+: 
+: --------------------
+: cd
+: current dir (HOME): /nfs/stak/users/dunnbrit
+: 
+: 
+: --------------------
+: pwd (10 points for being in the HOME dir)
+: /nfs/stak/users/dunnbrit
+: 
+: 
+: --------------------
+: mkdir testdir$$
+: mkdir: cannot create directory ‘testdir$$\n---------’: File exists
+: 
+: 
+: --------------------
+: cd testdir$$
+: current dir (PATH): /nfs/stak/users/dunnbrit/testdir$$
+---------
+: 
+: 
+: --------------------
+: pwd (5 points for being in the newly created dir)
+: /nfs/stak/users/dunnbrit/testdir$$
+---------
+: --------------------
+: Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
+: 
+Usage:
+ kill [options] <pid|name> [...]
+
+Options:
+ -a, --all              do not restrict the name-to-pid conversion to processes
+                        with the same uid as the present process
+ -s, --signal <sig>     send specified signal
+ -q, --queue <sig>      use sigqueue(2) rather than kill(2)
+ -p, --pid              print pids without signaling them
+ -l, --list [=<signal>] list signal names, or convert one to a name
+ -L, --table            list signal names and numbers
+
+ -h, --help     display this help and exit
+ -V, --version  output version information and exit
+
+For more details see kill(1).
+: Sun May 19 23:31:34 PDT 2019
+: : Sun May 19 23:31:34 PDT 2019
+: 
+Usage:
+ kill [options] <pid|name> [...]
+
+Options:
+ -a, --all              do not restrict the name-to-pid conversion to processes
+                        with the same uid as the present process
+ -s, --signal <sig>     send specified signal
+ -q, --queue <sig>      use sigqueue(2) rather than kill(2)
+ -p, --pid              print pids without signaling them
+ -l, --list [=<signal>] list signal names, or convert one to a name
+ -L, --table            list signal names and numbers
+
+ -h, --help     display this help and exit
+ -V, --version  output version information and exit
+
+For more details see kill(1).
+: 
