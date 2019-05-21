@@ -1,5 +1,5 @@
 PRE-SCRIPT INFO
-  Grading Script PID: 6617
+  Grading Script PID: 31612
   Note: your smallsh will report a different PID when evaluating $$
 : BEGINNING TEST SCRIPT
 : 
@@ -45,7 +45,8 @@ smallsh.h
 : 
 : --------------------
 : test -f badfile (10 points for returning error value of 1, note extraneous &)
-: : : 
+: : exit status 1
+: 
 : 
 : --------------------
 : wc in badfile (10 points for returning text error)
@@ -59,19 +60,23 @@ smallsh.h
 : 
 : --------------------
 : sleep 100 background (10 points for returning process ID of sleeper)
-: : 
+: : sleep: invalid time interval ‘&’
+Try 'sleep --help' for more information.
+
 : 
 : --------------------
 : pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 : (Ignore message about Operation Not Permitted)
-: pkill: killing pid 6354 failed: Operation not permitted
-pkill: killing pid 6469 failed: Operation not permitted
+: pkill: killing pid 31408 failed: Operation not permitted
+pkill: killing pid 31431 failed: Operation not permitted
 pkill: killing pid 47255 failed: Operation not permitted
 : 
 : 
 : --------------------
 : sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
-: : : 
+: : sleep: invalid time interval ‘&’
+Try 'sleep --help' for more information.
+: 
 : 
 : --------------------
 : pwd
@@ -88,16 +93,16 @@ pkill: killing pid 47255 failed: Operation not permitted
 : 
 : 
 : --------------------
-: mkdir testdir6618
+: mkdir testdir31613
 : : 
 : 
 : --------------------
-: cd testdir6618
+: cd testdir31613
 : : 
 : 
 : --------------------
 : pwd (5 points for being in the newly created dir)
-: /nfs/stak/users/dunnbrit/testdir6618
+: /nfs/stak/users/dunnbrit/testdir31613
 : --------------------
 : Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
 : 
@@ -117,8 +122,10 @@ Options:
  -V, --version  output version information and exit
 
 For more details see kill(1).
-: Mon May 20 03:43:47 PDT 2019
-: : Mon May 20 03:43:47 PDT 2019
+: Mon May 20 19:02:10 PDT 2019
+: : sleep: invalid time interval ‘&’
+Try 'sleep --help' for more information.
+Mon May 20 19:02:10 PDT 2019
 : 
 Usage:
  kill [options] <pid|name> [...]

@@ -48,6 +48,7 @@
 	    if(strstr(arguments[totalArg],"$$") != NULL){
 		//Replace the "$$" with the PID
 		sprintf(strstr(arguments[totalArg],"$$"),"%d ", getpid());
+		fflush(stdout);
 	    }
 	 
 	 //Get next token
@@ -64,7 +65,7 @@
  /*
   * Function performs file redirection
   */
- void redirectFile (int* inputfd, int* outputfd,int* inputIndex, int* outputIndex, char** arguments){
+ void redirectFile (int* inputfd, int* outputfd,int* inputIndex, int* outputIndex, char** arguments, char* exitStatus){
      //If input redirection needed
      if(*inputIndex > 0){
 	//Open the input file for read only
@@ -108,28 +109,6 @@
 	}
     }
 }
-
- 
-/*
- * Function executes the built in exit command
- */
- void exitCmd(char** arguments, int* totalArg){
-     	//Too many arguments and last argument is not to run in the background
-	if(*totalArg > 2){
-	    printf("ERROR: exit does not accept arguments\n");
-	    fflush(stdout);
-	}
-	else if(*totalArg == 2 && (strcmp(arguments[1],"&") != 0)){
-	    printf("ERROR: exit does not accept arguments\n");
-	    fflush(stdout);
-	}
-	//No arguments or ignore argument to run as background process
-	else{
-	    //Need to add in something to kill all processes first
-	    //Need exit status from processes
-	    exit(0);  
-	}
- }
  
  
  /*
@@ -166,9 +145,46 @@
  /*
   *Function executes built in status command
   */
- void statusCmd(){
-     
+ void statusCmd(char** arguments, char* exitStatus, int* totalArg){
+    //Too many arguments
+    if(*totalArg > 2){
+	printf("ERROR: status does not accept arguments\n");
+	fflush(stdout);
+    }
+    //Too many arguments and last argument not background
+    else if(*totalArg == 2 && (strcmp(arguments[1],"&") != 0)){
+	printf("ERROR: status does not accept arguments\n");
+	fflush(stdout);
+    }
+    //Print stauts
+    else{
+	printf("%s\n", exitStatus);
+	fflush(stdout);
+    }    
  }
+ 
+ /*
+  *Function redirects output for background processes
+  */
+ void backRedirection(int* inputfd, int* outputfd){
+     //open /dev/null
+     int devNull = open("/dev/null",O_RDWR);
+     
+     //If no input redirection provided
+     if(*inputfd == 0){
+	 //Redirect /dev/null to stdin
+	 dup2(0,devNull); 
+     }
+     //If no output redirection provided
+     if(*outputfd == 0){
+	 //Redirect std out to /dev/null
+	 dup2(devNull,1); 
+     }
+     
+     //Close on exec
+     fcntl(devNull, F_SETFD, FD_CLOEXEC);
+ }
+
  
 
 
