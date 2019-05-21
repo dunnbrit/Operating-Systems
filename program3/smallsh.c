@@ -71,6 +71,7 @@ while(1){
 		
 		//Print process id and exit status
 		printf("background pid %i is done : %s\n",background[i],exitStatus);
+		fflush(stdout);
 		
 		//Remove process id from background array
 		int j;
@@ -237,12 +238,10 @@ while(1){
 			//Call redirection function
 			redirectFile(&inputfd,&outputfd,&inputIndex,&outputIndex,arguments,exitStatus);
 		    }
-		    //If not
-		    else{
-			//Set final argument to NULL to indicate end
-			//Used later for exec
-			arguments[totalArg] = NULL;
-		    }
+		    
+		    //Set final argument to NULL to indicate end
+		    //Used later for exec
+		    arguments[totalArg-1] = NULL;
 		    
 		    //Do background redirection
 		    backRedirection(&inputfd, &outputfd);
@@ -256,21 +255,17 @@ while(1){
 			//Terminate process
 			kill(getpid(),getppid());
 		    }
-		    //If successful
-		    else{
-			//Print the process id
-			printf("background pid is %i", getpid());
-			//Add process id to background processes
-			background[processCount] = getpid();
-			//Increase background process count
-			++processCount;
-		    }
 		    break;
 
 		//Parent process
 		default:
-		    //Do nothing just wait on child
-		    break;   
+		    //Print the process id
+		    printf("background pid is %i\n", backspawnpid);
+		    //Add process id to background processes
+		    background[processCount] = backspawnpid;
+		    //Increase background process count
+		    ++processCount;
+		    break;  
 	    }
 	    //Do not wait for child
 	}
