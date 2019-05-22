@@ -1,5 +1,5 @@
 PRE-SCRIPT INFO
-  Grading Script PID: 41218
+  Grading Script PID: 5771
   Note: your smallsh will report a different PID when evaluating $$
 : BEGINNING TEST SCRIPT
 : 
@@ -60,21 +60,21 @@ smallsh.h
 : 
 : --------------------
 : sleep 100 background (10 points for returning process ID of sleeper)
-: background pid is 41273
+: background pid is 5966
 : 
 : 
 : --------------------
 : pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 : (Ignore message about Operation Not Permitted)
-: pkill: killing pid 40730 failed: Operation not permitted
+: pkill: killing pid 2679 failed: Operation not permitted
 pkill: killing pid 47255 failed: Operation not permitted
-background pid 41273 is done : terminated by signal 0
+background pid 5966 is done : terminated by signal 15
 : 
 : 
 : --------------------
 : sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
-: background pid is 41285
-: background pid 41285 is done : exit status 0
+: background pid is 6001
+: background pid 6001 is done : exit status 0
 : 
 : 
 : --------------------
@@ -92,16 +92,16 @@ background pid 41273 is done : terminated by signal 0
 : 
 : 
 : --------------------
-: mkdir testdir41219
+: mkdir testdir5780
 : : 
 : 
 : --------------------
-: cd testdir41219
+: cd testdir5780
 : : 
 : 
 : --------------------
 : pwd (5 points for being in the newly created dir)
-: /nfs/stak/users/dunnbrit/testdir41219
+: /nfs/stak/users/dunnbrit/testdir5780
 : --------------------
 : Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
 : 
@@ -121,9 +121,9 @@ Options:
  -V, --version  output version information and exit
 
 For more details see kill(1).
-: Mon May 20 19:24:13 PDT 2019
-: background pid is 41320
-: Mon May 20 19:24:13 PDT 2019
+: Tue May 21 20:49:58 PDT 2019
+: background pid is 6312
+: Tue May 21 20:49:58 PDT 2019
 : 
 Usage:
  kill [options] <pid|name> [...]

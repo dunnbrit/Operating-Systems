@@ -7,9 +7,54 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <signal.h>
 
 
 int main(){
+/**************Signals*****************************************************/
+    //Use a flag for entering and exiting foreground only mode
+    int fgOnlyMode = 0;
+    
+    /********Hand;e SIGINT****************************************/
+    //Initialize sigaction struct
+    struct sigaction ignore_action = {0};
+    //On SIGINT ignore signal
+    ignore_action.sa_handler = SIG_IGN;
+    //Define the sigaction function - which signal to be handled by which sigaction struct
+    sigaction(SIGINT, &ignore_action, NULL);
+    
+    /********Handle SIGTSTP***************************************/
+    //SIGSTOP function
+    void catchSIGTSTP(int signo){
+	//If currently not in foreground only mode
+	if(fgOnlyMode == 0){
+	    //Set to foreground only mode
+	    fgOnlyMode = 1;
+	    //Print message
+	    char* messageFG = "Entering foreground-only mode (& is now ignored)";
+	    write(STDOUT_FILENO, messageFG, 49);
+	}
+	//If currently in foreground only mode
+	else{
+	    //Set to normal mode
+	    fgOnlyMode = 0;
+	    //Print message
+	    char* messageBG = "Exiting foreground-only mode";
+	    write(STDOUT_FILENO, messageBG, 28);
+	}
+    }
+    //Initialize sigaction struct
+    struct sigaction SIGTSTP_action = {0};
+    sigemptyset(&SIGTSTP_action.sa_mask); 
+    //On SIGTSTP go to catchSIGTSTP function
+    SIGTSTP_action.sa_handler = catchSIGTSTP;
+    //Block other signals until function executes
+    sigfillset(&SIGTSTP_action.sa_mask);
+    //Set flag to resume what was happening before
+    SIGTSTP_action.sa_flags = SA_RESTART;
+    //Define the sigaction function - which signal to be handled by which sigaction struct
+    sigaction(SIGTSTP, &SIGTSTP_action, NULL);
+      
 /*************Setup********************************************************/  
 //Used to hold the full command and arguments inputed by user
 char* input;
@@ -65,7 +110,7 @@ while(1){
 		}
 		if(WIFSIGNALED(childExit)){
 		    //Exit by signal, set status
-		    sprintf(exitStatus,"terminated by signal %i", 0);
+		    sprintf(exitStatus,"terminated by signal %i", WTERMSIG(childExit));
 		    fflush(stdout);
 		}
 		
@@ -148,7 +193,8 @@ while(1){
     /******Non built in Commands*************************/
     else{	
 	//If not to be run in the background (run in foreground)
-	if((strcmp(arguments[totalArg-1],"&") != 0)){
+	//Last argument is not & or in foreground only mode
+	if((strcmp(arguments[totalArg-1],"&") != 0) || fgOnlyMode == 1){
 	    //Variable to hold the processID
 	    pid_t spawnpid = -5;
 	    //Hold info on child termination
@@ -168,6 +214,11 @@ while(1){
 
 		//Child process
 		case 0:
+		    //Child should ignore SIGTSTP so change handler
+		    SIGTSTP_action.sa_handler = SIG_IGN;
+		    //Child should terminate if SIGINT
+		    ignore_action.sa_handler = SIG_DFL;
+		    
 		    //Check if redirection needs to be done
 		    if(inputIndex > 0 || outputIndex > 0){
 			//Call redirection function
@@ -178,6 +229,12 @@ while(1){
 			//Set final argument to NULL to indicate end
 			//Used later for exec
 			arguments[totalArg] = NULL;
+		    }
+		    
+		    //If in foreground only mode and was supposed to be a background command
+		    if(fgOnlyMode == 1 && (strcmp(arguments[totalArg-1],"&") == 0)){
+			//Set & to Null
+			arguments[totalArg -1] = NULL;
 		    }
 
 		    //Exec command (this replaces the fork)
@@ -208,7 +265,7 @@ while(1){
 	    }
 	    if(WIFSIGNALED(childExitMethod)){
 		//Exit by signal, set status
-		sprintf(exitStatus,"terminated by signal %i", 0);
+		sprintf(exitStatus,"terminated by signal %i", WTERMSIG(childExitMethod));
 		fflush(stdout);
 	    } 
 	}
@@ -233,6 +290,9 @@ while(1){
 		
 		//Child process
 		case 0:
+		    //Child should ignore SIGTSTP so change handler
+		    SIGTSTP_action.sa_handler = SIG_IGN;
+		    
 		    //Check if redirection needs to be done
 		    if(inputIndex > 0 || outputIndex > 0){
 			//Call redirection function
