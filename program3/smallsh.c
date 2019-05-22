@@ -31,16 +31,16 @@ int main(){
 	    //Set to foreground only mode
 	    fgOnlyMode = 1;
 	    //Print message
-	    char* messageFG = "Entering foreground-only mode (& is now ignored)";
-	    write(STDOUT_FILENO, messageFG, 49);
+	    char* messageFG = "Entering foreground-only mode (& is now ignored)\n";
+	    write(STDOUT_FILENO, messageFG, 50);
 	}
 	//If currently in foreground only mode
 	else{
 	    //Set to normal mode
 	    fgOnlyMode = 0;
 	    //Print message
-	    char* messageBG = "Exiting foreground-only mode";
-	    write(STDOUT_FILENO, messageBG, 28);
+	    char* messageBG = "Exiting foreground-only mode\n";
+	    write(STDOUT_FILENO, messageBG, 30);
 	}
     }
     //Initialize sigaction struct
@@ -89,9 +89,9 @@ sprintf(exitStatus,"exit status %i", 0);
 fflush(stdout);
 
 
-while(1){
+do{
 /*************Prompt and Getting Input*************************************/
-    
+
     //If there are any background processes running
     if(processCount > 0){
 	pid_t childPID;
@@ -136,6 +136,7 @@ while(1){
     fflush(stdout);
     //Get input
     getline(&input,&bufferSize,stdin);
+    
 
     //Set Input and Output index to 0 to mean none
     inputIndex = 0;
@@ -147,6 +148,7 @@ while(1){
     totalArg = getArgs(input, arguments,&inputIndex, &outputIndex);
 
 /*************Handling Different Commands**********************************/
+    
 
     /******Blank Line**************************************/
     if(strcmp(arguments[0],"") == 0){
@@ -321,6 +323,7 @@ while(1){
 		default:
 		    //Print the process id
 		    printf("background pid is %i\n", backspawnpid);
+		    fflush(stdout);
 		    //Add process id to background processes
 		    background[processCount] = backspawnpid;
 		    //Increase background process count
@@ -342,7 +345,7 @@ while(1){
     //Set to null
     input = NULL;
     
-}//End of while loop
+}while(1);//End of while loop
     return 0;
 
 }

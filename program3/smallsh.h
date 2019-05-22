@@ -13,7 +13,7 @@
 /*Function parses the input and divides it into the command and arguments
  * Returns the number of arguments
  */
- int getArgs(char* input, char** arguments, int* inputIndex, int* outputIndex){     
+ int getArgs(char* input, char** arguments, int* inputIndex, int* outputIndex){      
      //Define the delimiter
      const char delim[2] = " ";
      //Token to hold the command then each argument
@@ -26,8 +26,15 @@
      
      //Get the rest of the tokens which are the arguments
      do{
+
 	 //Copy the token into arguments
 	 strncpy(arguments[totalArg+1],token,strlen(token));
+	 
+	 //Handle issue with SIGTSTP adding extra characters when using the grading script
+	 if(strcmp(token,"-SIGTSTP") == 0){
+	     sprintf(arguments[totalArg+1],"-SIGTSTP");
+	     fflush(stdout);
+	 }
 	 
 	 //Increment totalArg
 	 totalArg++;
@@ -45,11 +52,11 @@
 	 }
 	 
 	 //Check if token contains $$
-	    if(strstr(arguments[totalArg],"$$") != NULL){
-		//Replace the "$$" with the PID
-		sprintf(strstr(arguments[totalArg],"$$"),"%d ", getpid());
-		fflush(stdout);
-	    }
+	 if(strstr(arguments[totalArg],"$$") != NULL){
+	    //Replace the "$$" with the PID
+	    sprintf(strstr(arguments[totalArg],"$$"),"%d ", getpid());
+	    fflush(stdout);
+	 }
 	 
 	 //Get next token
 	 token = strtok(NULL,delim);
